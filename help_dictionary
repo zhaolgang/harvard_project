@@ -1,0 +1,4 @@
+# 1. change files in this dictionary
+# 2. git add .
+# 3. git commit -m "this is the comment why you add these files"
+# 4. git push origin master 
