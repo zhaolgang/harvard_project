@@ -1,0 +1,754 @@
+This program ran on derby01 /d/q1/5158667.1.linux01.q
+1                                                      The SAS System                          16:57 Wednesday, July 15, 2020
+
+NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.4 (TS1M5) 
+      Licensed to CHANNING DIVISION OF NETWORK MEDICINE - T&R, Site 70123069.
+NOTE: This session is executing on the Linux 2.6.32-754.27.1.el6.x86_64 (LIN X64) platform.
+
+
+
+NOTE: Updated analytical products:
+      
+      SAS/STAT 14.3
+      SAS/ETS 14.3
+      SAS/OR 14.3
+      SAS/IML 14.3
+      SAS/QC 14.3
+
+NOTE: Additional host information:
+
+ Linux LIN X64 2.6.32-754.27.1.el6.x86_64 #1 SMP Tue Jan 28 14:11:45 UTC 2020 x86_64 CentOS release 6.10 (Final) 
+
+You are running SAS 9. Some SAS 8 files will be automatically converted 
+by the V9 engine; others are incompatible.  Please see 
+http://support.sas.com/rnd/migration/planning/platform/64bit.html
+
+PROC MIGRATE will preserve current SAS file attributes and is 
+recommended for converting all your SAS libraries from any 
+SAS 8 release to SAS 9.  For details and examples, please see
+http://support.sas.com/rnd/migration/index.html
+
+
+This message is contained in the SAS news file, and is presented upon
+initialization.  Edit the file "news" in the "misc/base" directory to
+display site-specific news and information in the program log.
+The command line option "-nonews" will prevent this display.
+
+
+
+
+NOTE: SAS initialization used:
+      real time           0.40 seconds
+      cpu time            0.07 seconds
+      
+1          
+2          *filename snp pipe "zcat mcglynn_zhang_v2.zip";
+3          filename hpstools '/proj/hpsass/hpsas00/hpstools/sasautos';
+4          filename channing '/usr/local/channing/sasautos';
+5          options mautosource sasautos=(channing hpstools);
+6          
+7          proc format;
+8          value agecat 1='<55' 2='55-59' 3='60-64' 4='65-69'  5='70+';
+NOTE: Format AGECAT has been output.
+9          value sex    0='men' 1='women';
+NOTE: Format SEX has been output.
+10         value SMOKE_FORMER 0='Never smoked' 1='Former smoker' 2='Current smoker' 9='Unknown';
+NOTE: Format SMOKE_FORMER has been output.
+11         value PHYSIC 0 = 'Never' 1 = 'Rarely' 2 = '1-3 time per month' 3 = '1-2 times per week' 4 = '3-4 times per week'
+12                      5 = '5 or more times per week' 9 = 'Unknown';
+NOTE: Format PHYSIC has been output.
+13                      run;
+
+NOTE: PROCEDURE FORMAT used (Total process time):
+      real time           0.27 seconds
+      cpu time            0.01 seconds
+      
+
+14         
+15         libname here1 "/udd/nhyun/NIH-AARP";
+NOTE: Libref HERE1 was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: /udd/nhyun/NIH-AARP
+16         
+17         data old;
+18         set here1.mcglynn_zhang_v3;
+19         run;
+
+NOTE: There were 566398 observations read from the data set HERE1.MCGLYNN_ZHANG_V3.
+NOTE: The data set WORK.OLD has 566398 observations and 88 variables.
+2                                                      The SAS System                          16:57 Wednesday, July 15, 2020
+
+NOTE: DATA statement used (Total process time):
+      real time           7.59 seconds
+      cpu time            2.62 seconds
+      
+
+20         
+21         proc sort;by WESTATID  ;run;
+
+NOTE: There were 566398 observations read from the data set WORK.OLD.
+NOTE: The data set WORK.OLD has 566398 observations and 88 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           7.01 seconds
+      cpu time            2.15 seconds
+      
+
+22         
+23         libname here2 "/udd/nhyun/AARP-2020";
+NOTE: Libref HERE2 was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: /udd/nhyun/AARP-2020
+24         
+25         data new;
+26         set here2.xuehongzhang16apr2020;
+27         keep WESTATID   FUQ_EVER_MED_CHOLESTEROL_1YR FUQ_EVER_MED_CHOLESTEROL_20YR RF_PHYS_SLEEP  RF_Q47_2
+28              FATTYACID183 FATTYACID205
+29              FATTYACID225 FATTYACID226
+30              FATTYACID182_CSFII
+31              HEI2015_TOTAL_SCORE
+32              MPED_D_CHEESE
+33              MPED_D_MILK
+34              MPED_D_TOTAL
+35              MPED_D_YOGURT
+36              MPED_G_WHL
+37              MPED_PROCMEAT
+38              MPED_REDMEAT
+39              MPED_VEG_CHENO
+40              MPED_VEG_CORN
+41              MPED_VEG_CRUC2
+42              MPED_VEG_GREEN_LEAFY
+43              MPED_VEG_LEGUM
+44              MPED_VEG_LETTUCE
+45              MPED_VEG_SOLAN
+46              MPED_VEG_SWEET_POTATO
+47              MPED_VEG_UMBEL
+48              MPED_V_DRKGR
+49              MPED_V_ORANGE
+50              MPED_V_OTHER
+51              MPED_V_TOMATO
+52              MPED_V_TOTAL
+53              MPED_WHITEMEAT
+54              PHYSIC
+55              PUFA_N3
+56              PUFA_N6
+57              ;
+58             run;
+
+NOTE: There were 566398 observations read from the data set HERE2.XUEHONGZHANG16APR2020.
+NOTE: The data set WORK.NEW has 566398 observations and 36 variables.
+NOTE: DATA statement used (Total process time):
+      real time           3.91 seconds
+      cpu time            0.79 seconds
+      
+
+59         
+60         data new;set new;
+61         rename FATTYACID183=fa183 FATTYACID205=fa205
+62                FATTYACID225=fa225 FATTYACID226=fa226
+63                FATTYACID182_CSFII=fa182;
+64         run;
+
+NOTE: There were 566398 observations read from the data set WORK.NEW.
+NOTE: The data set WORK.NEW has 566398 observations and 36 variables.
+NOTE: DATA statement used (Total process time):
+      real time           3.06 seconds
+      cpu time            0.73 seconds
+      
+3                                                      The SAS System                          16:57 Wednesday, July 15, 2020
+
+
+65         
+66         proc freq;
+67         tables  FUQ_EVER_MED_CHOLESTEROL_1YR FUQ_EVER_MED_CHOLESTEROL_20YR RF_PHYS_SLEEP  RF_Q47_2;
+68         run;
+
+NOTE: There were 566398 observations read from the data set WORK.NEW.
+NOTE: The PROCEDURE FREQ printed page 1.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           1.23 seconds
+      cpu time            0.40 seconds
+      
+
+69         
+70         proc format;
+71         value sleep 0='<5' 1='5-6' 2='7-8' 3='9+' 9='Unk';
+NOTE: Format SLEEP has been output.
+72         run;
+
+NOTE: PROCEDURE FORMAT used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.00 seconds
+      
+
+73         
+74         proc means data=new n nmiss min max mean std q1 median q3;
+75         var
+76         FA183 FA205 FA225  FA226  FA182
+77              HEI2015_TOTAL_SCORE
+78              MPED_D_CHEESE
+79              MPED_D_MILK
+80              MPED_D_TOTAL
+81              MPED_D_YOGURT
+82              MPED_G_WHL
+83              MPED_PROCMEAT
+84              MPED_REDMEAT
+85              MPED_VEG_CHENO
+86              MPED_VEG_CORN
+87              MPED_VEG_CRUC2
+88              MPED_VEG_GREEN_LEAFY
+89              MPED_VEG_LEGUM
+90              MPED_VEG_LETTUCE
+91              MPED_VEG_SOLAN
+92              MPED_VEG_SWEET_POTATO
+93              MPED_VEG_UMBEL
+94              MPED_V_DRKGR
+95              MPED_V_ORANGE
+96              MPED_V_OTHER
+97              MPED_V_TOMATO
+98              MPED_V_TOTAL
+99              MPED_WHITEMEAT
+100             PHYSIC
+101             PUFA_N3
+102             PUFA_N6
+103             ;
+104        output out=stdfile;
+105        run;
+
+NOTE: There were 566398 observations read from the data set WORK.NEW.
+NOTE: The data set WORK.STDFILE has 5 observations and 34 variables.
+NOTE: The PROCEDURE MEANS printed pages 2-3.
+NOTE: PROCEDURE MEANS used (Total process time):
+      real time           6.41 seconds
+      cpu time            4.99 seconds
+      
+
+106        
+107        proc print data=stdfile;run;
+
+NOTE: There were 5 observations read from the data set WORK.STDFILE.
+NOTE: The PROCEDURE PRINT printed page 4.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+      
+
+4                                                      The SAS System                          16:57 Wednesday, July 15, 2020
+
+108        
+109        data one;
+110        merge old new;
+111        by WESTATID;
+112        
+113        /*  HEI2015_
+114          TOTAL_   MPED_D_   MPED_D_   MPED_D_
+115           SCORE    CHEESE      MILK     TOTAL
+116        
+117           9.62      0.25      1.29      1.37
+118        
+119        
+120        
+121                MPED_D_      MPED_      MPED_      MPED_  MPED_VEG_  MPED_VEG_  MPED_VEG_    GREEN_   MPED_VEG_  MPED_VEG_
+121      !   MPED_VEG_
+122         Obs    YOGURT      G_WHL   PROCMEAT    REDMEAT    CHENO       CORN      CRUC2      LEAFY      LEGUM     LETTUCE
+122      !    SOLAN
+123        
+124        
+125          5       0.17       0.86       0.87       2.14       0.15       0.09       0.34       0.49       0.27       0.28
+125      !       0.39
+126        
+127             MPED_VEG_
+128               SWEET_   MPED_VEG_    MPED_V_    MPED_V_    MPED_V_    MPED_V_    MPED_V_    MPED_
+129         Obs   POTATO     UMBEL        DRKGR     ORANGE      OTHER     TOMATO      TOTAL  WHITEMEAT     PHYSIC    PUFA_N3
+129      !    PUFA_N6
+130        
+131          5       0.07       0.18       0.34       0.22       0.54       0.40       1.41       1.27       1.59       0.90
+131      !       8.30 */
+132        
+133        fa183_std=FA183/0.83148;
+134        fa205_std=fa205/0.042197;
+135        fa225_std=fa225/0.015386;
+136        fa226_std=fa226/0.074966;
+137        fa182_std=fa182/8.24492;
+138        HEI2015_TOTAL_SCORE_std=HEI2015_TOTAL_SCORE/9.6239648;
+139        MPED_D_CHEESE_std=MPED_D_CHEESE/0.25;
+140        MPED_D_MILK_std=MPED_D_MILK/1.29;
+141        MPED_D_TOTAL_std=MPED_D_TOTAL/1.37;
+142        MPED_D_YOGURT_std=MPED_D_YOGURT/0.17;
+143        MPED_G_WHL_std=MPED_G_WHL/0.86;
+144        MPED_PROCMEAT_std=MPED_PROCMEAT/0.87;
+145        MPED_REDMEAT_std=MPED_REDMEAT/2.14;
+146        MPED_VEG_CHENO_std=MPED_VEG_CHENO/0.15;
+147        MPED_VEG_CORN_std=MPED_VEG_CORN/0.09;
+148        MPED_VEG_CRUC2_std=MPED_VEG_CRUC2/0.34;
+149        MPED_VEG_GREEN_LEAFY_std=MPED_VEG_GREEN_LEAFY/0.49;
+150        MPED_VEG_LEGUM_std=MPED_VEG_LEGUM/0.27;
+151        MPED_VEG_LETTUCE_std=MPED_VEG_LETTUCE/0.28;
+152        MPED_VEG_SOLAN_std=MPED_VEG_SOLAN/0.39;
+153        MPED_VEG_SWEET_POTATO_std=MPED_VEG_SWEET_POTATO/0.07;
+154        MPED_VEG_UMBEL_std=MPED_VEG_UMBEL/0.18;
+155        MPED_V_DRKGR_std=MPED_V_DRKGR/0.34;
+156        MPED_V_ORANGE_std=MPED_V_ORANGE/0.22;
+157        MPED_V_OTHER_std=MPED_V_OTHER/0.54;
+158        MPED_V_TOMATO_std=MPED_V_TOMATO/0.40;
+159        MPED_V_TOTAL_std=MPED_V_TOTAL/1.41;
+160        MPED_WHITEMEAT_std=MPED_WHITEMEAT/1.27;
+161        PUFA_N3_std=PUFA_N3/0.90;
+162        PUFA_N6_std=PUFA_N6/8.30;
+163        
+164        *define main exposures;
+165        
+166        %indic3(vbl=RF_PHYS_SLEEP,prefix=sleep,reflev=2,min=0,max=3,missing= . 9,usemiss=1,
+167        label0='<5', label1='5-6', label2='7-8', label3='9+' );
+MACRO INDIC3
+Maintained by Ellen Hertzmark, stleh@gauss.bwh.harvard.edu
+168        
+169        %indic3(vbl=FUQ_EVER_MED_CHOLESTEROL_1YR,prefix=statin1,reflev=0,min=1,max=1,missing=9 .,usemiss=1,
+170        label1='Ever use statin over past 1 year');
+171        
+172        %indic3(vbl=FUQ_EVER_MED_CHOLESTEROL_20YR,prefix=statin2,reflev=0,min=1,max=1,missing=9 .,usemiss=1,
+173        label1='Ever use 1/wk statin over past 20 year');
+174        
+175           can_year=year(CANCER_DXDT);
+176           can_month=month(CANCER_DXDT);
+5                                                      The SAS System                          16:57 Wednesday, July 15, 2020
+
+177           can_day=day(CANCER_DXDT);
+178        
+179           entry_year=year(entry_dt);
+180           entry_month=month(entry_dt);
+181           entry_day=day(entry_dt);
+182        
+183           exit_year=year(exit_DT );
+184           exit_month=month(exit_dt);
+185           exit_day=day(exit_dt);
+186        
+187           death_year=year(dod);
+188           death_month=month(dod);
+189           death_day=day(dod);
+190           if death_year>0 then died=1;
+191        
+192           *baseline is the year of entry;
+193        
+194           min_year=min(exit_year,death_year,can_year);
+195           if min_year=death_year then min_month=death_month;
+196           else if min_year=can_year then min_month=can_month;
+197           else if min_year= exit_year then min_month= exit_month;
+198        
+199           followup=(exit_year*12+exit_month) - (entry_year*12+entry_month);
+200           followupyrs=(exit_year+exit_month/12) - (entry_year+entry_month/12);
+201        
+202            * Variables from the data;
+203        
+204           allhcc=0;
+205           if hcc=1 or CHOL_EXTRA=1 or  CHOL_INTRA =1 then allhcc=1;
+206        
+207        *Hepatobiliary Cancers;
+208        if cancer=1 and cancer_site in ("C220", "C221") and cancer_hist ne "8162" then caseliver=1; else caseliver=0; *ALL
+208      !  liver cases;
+209        if cancer=1 and cancer_site in ("C220", "C221") and cancer_hist in ("8170", "8171", "8172", "8173", "8174",
+209      ! "8175") then casehcc=1;
+210        else casehcc=0; *hepatocellular carcinoma cases;
+211        if cancer=1 and cancer_site in ("C220", "C221") and cancer_hist in ("8032", "8033", "8070", "8071", "8140",
+211      ! "8141", "8160", "8161", "8260", "8480", "8481",
+212           "8490", "8560") then caseicc=1; else caseicc=0; *intrahepatic cholangiocarcinoma cases;
+213        if cancer=1 and cancer_site in ("C220", "C221") and casehcc=0 and caseicc=0 then caseotherliver=1; else
+213      ! caseotherliver=0; *all other liver cancer;
+214           if cancer=1 and (cancer_site in ("C239", "C240", "C241", "C248", "C249") or cancer_hist="8162") then
+214      ! casebiliary=1; else casebiliary=0; *all biliary tract tumors;
+215           if cancer=1 and cancer_site="C239" then casegallbladder=1; else casegallbladder=0; *gallbladder cancer;
+216        if cancer=1 and ((cancer_site="C240" and cancer_hist in ("8032", "8033", "8070", "8071", "8140", "8141", "8160",
+216      ! "8161", "8260", "8480", "8481", "8490", "8560"))
+217         or cancer_hist="8162") then caseecc=1; else caseecc=0; *extrahepatic cholangiocarcinoma;
+218        if cancer=1 and cancer_site="C241" then casevater=1; else casevater=0; *ampulla of Vater;
+219        
+220          *liver mortality;
+221        
+222        *coding of liver disease mortality (LD);
+223        
+224        LD=0;
+225        four_type = substr (UNDERLYINGCOD_ICD,1,4);
+226        three_type = substr (UNDERLYINGCOD_ICD,1,3);
+227        two_type = substr (UNDERLYINGCOD_ICD,1,2);
+228        
+229        if three_type = "571" then LD=1;
+230        if three_type = "K70" then LD=1;
+231        if three_type = "K73" then LD=1;
+232        if three_type = "K74" then LD=1;
+233        
+234        final_date=min(exit_dt,dod);
+235        deathfu=final_date-entry_dt;
+236        deathyrs=deathfu/365;
+237        
+238        if caseicc=1 or caseecc=1 or casehcc=1 then allcasehcc=1;
+239        else allcasehcc=0;
+240        
+241        run;
+
+NOTE: Variable _end_ is uninitialized.
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      414274 at 175:13   414274 at 176:14   414274 at 177:12   422249 at 187:15   422249 at 188:16   422249 at 189:14
+6                                                      The SAS System                          16:57 Wednesday, July 15, 2020
+
+NOTE: There were 566398 observations read from the data set WORK.OLD.
+NOTE: There were 566398 observations read from the data set WORK.NEW.
+NOTE: The data set WORK.ONE has 566398 observations and 197 variables.
+NOTE: DATA statement used (Total process time):
+      real time           9.34 seconds
+      cpu time            4.25 seconds
+      
+
+242        
+243        data two;set one end=_end_;
+244        
+245           *define outcome;
+246        
+247           allhcc=0;
+248           if hcc=1 or CHOL_EXTRA=1 or  CHOL_INTRA =1 then allhcc=1;
+249        
+250           *aspirin;
+251        
+252        aspirin=RF_ABNET_ASPIRIN;
+253        
+254        %indic3(vbl=aspirin,prefix=aspirin,reflev=0,min=1,max=1,usemiss=1);
+255        
+256        *removal of death before baseline;
+257        
+258         if 0<dod<entry_dt then delete;
+259        
+260        *entry age out of range(based on scandate);
+261        
+262         if ENTRY_AGE<50 or ENTRY_AGE>69 then delete;
+263        
+264           *in good health;
+265        
+266        /*1 = Excellent
+267        2 = Very good
+268        3 = Good
+269        4 = Fair
+270        5 = Poor
+271        9 = Unknown
+272        */
+273        
+274        
+275         if health in (1,2,3,4);
+276        
+277         *remove calorie;
+278        
+279        if (sex=1 and 500<=calories<=3500) or (sex=0 and 800<=calories<=4000);
+280        
+281        *removal of cancer;
+282        
+283        if  SELF_BREAST=1 or SELF_CANCER=1 or SELF_COLON=1 or SELF_OTHER=1 or SELF_PROSTATE=1 then delete;
+284        
+285        if renal=1 then delete;
+286        
+287        *prevalent cases;
+288        
+289        if (hcc=1 or CHOL_EXTRA=1 or  CHOL_INTRA =1) and  0<CANCER_DXDT<entry_dt then delete;
+290        
+291        *for other cancers;
+292        
+293        if hcc^=1 and  0<CANCER_DXDT<entry_dt then delete;
+294        
+295        if personyrs<=0 then delete;
+296        
+297           *make dummy variables;
+298        
+299           if alcohol=0     then alc=1;
+300           else if 0<alcohol<5  then alc=2;
+301           else if 5<=alcohol<10   then alc=3;
+302           else if alcohol>=10 then alc=4;
+303           else if alcohol=.     then alc=.;   *include missing in the most common group;
+304        
+305        
+306        %indic3(vbl=alc,prefix=alc,min=2,max=4,reflev=1,missing=.,usemiss=0,
+307                label1='Non drinker',
+308                label2='0.1-4.9',
+309                label3='5-9.9',
+7                                                      The SAS System                          16:57 Wednesday, July 15, 2020
+
+310                label4='10+');
+311        
+312           if 0<bmi_cur<25      then bmi_curgrp=1;
+313           else  if 25<=bmi_cur<30    then bmi_curgrp=2;
+314           else  if 30<=bmi_cur       then bmi_curgrp=3;
+315           else  if bmi_cur =.     then bmi_curgrp=.; *include missing in the most common group;
+316        
+317        %indic3(vbl=bmi_curgrp, prefix=bmi_curgrp, min=1, max=3, reflev=1, missing=., usemiss=1,
+318               label1='bmi_cur <25',
+319                label2='bmi_cur 25-29.9',
+320        	label3='bmi_cur 30+');
+321        
+322        /******************************************
+323          ****  SMOKE_FORMER - Smoking status  ****
+324          *****************************************
+325          ****  0: Never smoked                ****
+326          ****  1: Former smoker               ****
+327          ****  2: Current smoker              ****
+328          ****  9: Unknown                     ****
+329         ******************************************/
+330        
+331        %indic3(vbl=smoke_former,prefix=smoke_former,min=0,max=2,reflev=0,missing=9,usemiss=1,
+332        label0='Never smoked',label1='Former smoker',label2='Current smoker');
+333        
+334        /*white, black and others ??*/
+335           if racei=1 then race3=1;
+336              else if racei=2 then race3=2;
+337              else if racei=3 or racei=4 or racei=5 or racei=6 then race3=3;
+338        
+339        %indic3(vbl=racem,prefix=racem,min=1,max=4,reflev=1,missing=9 .,usemiss=1);
+340        
+341        %indic3(vbl=race3,prefix=race3,min=1,max=3,reflev=1,missing=.,usemiss=1);
+342        
+343        /*PHYSICQ--
+344        Physical activity at least 20 minutes (past 12 months) that caused increases in breathing or heart rate, or worked
+344      !  up a sweat*/
+345        
+346        /*
+347        0 = Never
+348        1 = Rarely
+349        2 = 1-3 time per month
+350        3 = 1-2 times per week
+351        4 = 3-4 times per week
+352        5 = 5 or more times per week
+353        9 = Unknown
+354        */
+355        
+356        %indic3(vbl=PHYSIC,prefix=PHYSIC,min=0,max=5,reflev=1,missing=9 .,usemiss=1,
+357        label0='Never',
+358        label1='Rarely',
+359        label2='1-3 time per month',
+360        label3='1-2 times per week',
+361        label4='3-4 times per week',
+362        label5='5 or more times per week');
+363        
+364        *education;
+365        
+366        %indic3(vbl=educm,prefix=educm,min=1,max=5,reflev=5,missing=. 9, usemiss=1,
+367        label1='<=11 yrs',label2='High school',label3='Vocational tech',
+368        label4='Some College',label5='College/Post Graduate');
+369        
+370         if caseliver=1 then do;
+371         if caseicc^=1 then caseicc=2;
+372         if caseecc^=1 then caseecc=2;
+373         if casehcc^=1 then casehcc=2;
+374        end;
+375        
+376        run;
+
+WARNING: The variable _end_ exists on an input data set and is also set by an I/O statement option.  The variable will not 
+         be included on any output data set and unexpected results can occur.
+NOTE: There were 566398 observations read from the data set WORK.ONE.
+NOTE: The data set WORK.TWO has 453333 observations and 237 variables.
+NOTE: DATA statement used (Total process time):
+      real time           8.14 seconds
+      cpu time            3.89 seconds
+8                                                      The SAS System                          16:57 Wednesday, July 15, 2020
+
+      
+
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           48.11 seconds
+      cpu time            19.97 seconds
+      
+                                                       The SAS System                      16:57 Wednesday, July 15, 2020   1
+
+                                                     The FREQ Procedure
+
+                                  Ever use Cholesterol-lowering medications over past year?
+ 
+                               FUQ_EVER_MED_                             Cumulative    Cumulative
+                             CHOLESTEROL_1YR    Frequency     Percent     Frequency      Percent
+                            ---------------------------------------------------------------------
+                                           0      156105       49.74        156105        49.74  
+                                           1      143456       45.71        299561        95.45  
+                                           9       14274        4.55        313835       100.00  
+
+                                                  Frequency Missing = 252563
+
+
+                     Ever use Cholesterol-lowering medications at least once per week over past 20 years?
+ 
+                               FUQ_EVER_MED_                             Cumulative    Cumulative
+                            CHOLESTEROL_20YR    Frequency     Percent     Frequency      Percent
+                            ---------------------------------------------------------------------
+                                           0      140483       44.76        140483        44.76  
+                                           1      135129       43.06        275612        87.82  
+                                           9       38223       12.18        313835       100.00  
+
+                                                  Frequency Missing = 252563
+
+
+       Hours spent sleeping at night during typical 24 hour period in past 12 months (0=<5, 1=5-6, 2=7-8, 3=9+, 9=Unk)
+ 
+                                                                       Cumulative    Cumulative
+                             RF_PHYS_SLEEP    Frequency     Percent     Frequency      Percent
+                             ------------------------------------------------------------------
+                                         0       10172        3.04         10172         3.04  
+                                         1      105329       31.45        115501        34.49  
+                                         2      205932       61.49        321433        95.98  
+                                         3       11940        3.57        333373        99.54  
+                                         9        1532        0.46        334905       100.00  
+
+                                                 Frequency Missing = 231493
+
+
+                        Q47: Have you ever been told by a doctor that you had high cholesterol level?
+ 
+                                                                     Cumulative    Cumulative
+                                RF_Q47_2    Frequency     Percent     Frequency      Percent
+                                -------------------------------------------------------------
+                                0             147846       44.15        147846        44.15  
+                                1             146032       43.60        293878        87.75  
+                                E                 43        0.01        293921        87.76  
+                                M              40984       12.24        334905       100.00  
+
+                                                 Frequency Missing = 231493
+                                                       The SAS System                      16:57 Wednesday, July 15, 2020   2
+
+                                                     The MEANS Procedure
+
+Variable               Label
+-----------------------------------------------------------------------------------------------------------------------------
+fa183                  Fatty acid 18:3 - g                                                                                   
+fa205                  Fatty acid 20:5 - g                                                                                   
+fa225                  Fatty acid 22:5 - g                                                                                   
+fa226                  Fatty acid 22:6 - g                                                                                   
+fa182                  Fatty acid 18:2 - g (CSFII)                                                                           
+HEI2015_TOTAL_SCORE    TOTAL HEI-2015 SCORE                                                                                  
+MPED_D_CHEESE          MPED Number of cheese cup equivalents per day                                                         
+MPED_D_MILK            MPED Number of milk cup equivalents per day                                                           
+MPED_D_TOTAL           MPED Total number of milk group (milk, yogurt & cheese) cup equivalent per day                        
+MPED_D_YOGURT          MPED Number of yogurt cup equivalents per day                                                         
+MPED_G_WHL             MPED Number of whole grain ounce equivalents per day                                                  
+MPED_PROCMEAT          MPED Oz processed meat per day                                                                        
+MPED_REDMEAT           MPED Oz cooked lean red meat per day                                                                  
+MPED_VEG_CHENO         MPED Vegetable cup equivalents of chenopodiaceae (day)                                                
+MPED_VEG_CORN          MPED Vegetable cup equivalents of fresh corn (gramineae) (day)                                        
+MPED_VEG_CRUC2         MPED Vegetable cup equivalents of cruciferous vegetables (2nd def. - incl. a portion of spinach) (day)
+MPED_VEG_GREEN_LEAFY   MPED Vegetable cup equivalents of dark green vegetables, including lettuce (day)                      
+MPED_VEG_LEGUM         MPED Vegetable cup equivalents of legums (day)                                                        
+MPED_VEG_LETTUCE       MPED Vegetable cup equivalents of lettuce (compositae) (day)                                          
+MPED_VEG_SOLAN         MPED Vegetable cup equivalents of solanaceae (day)                                                    
+MPED_VEG_SWEET_POTATO  MPED Vegetable cup equivalents of sweet potatoes (convolvulaceae) (day)                               
+MPED_VEG_UMBEL         MPED Vegetable cup equivalents of umbelliferae (day)                                                  
+MPED_V_DRKGR           MPED Number of dark-green vegetable cup equivalents per day                                           
+MPED_V_ORANGE          MPED Number of orange vegetable cup equivalents per day                                               
+MPED_V_OTHER           MPED Number of other vegetable cup equivalents per day                                                
+MPED_V_TOMATO          MPED Number of tomato cup equivalents per day                                                         
+MPED_V_TOTAL           MPED Total number of vegetable cup equivalents excl legumes per day                                   
+MPED_WHITEMEAT         MPED Oz cooked lean white meat (not incl. fish) per day                                               
+PHYSIC                 Physical activity >= 20 min (past 12 months)                                                          
+PUFA_N3                n-3 Polyunsaturated fatty acids (g/day)                                                               
+PUFA_N6                n-6 Polyunsaturated fatty acids (g/day)                                                               
+-----------------------------------------------------------------------------------------------------------------------------
+
+                                                                                                        Lower
+  Variable                    N  N Miss       Minimum       Maximum          Mean       Std Dev      Quartile        Median
+  -------------------------------------------------------------------------------------------------------------------------
+  fa183                  566398       0             0    48.3700000     1.3470662     0.8314797     0.8300000     1.1800000
+  fa205                  566398       0             0     2.1300000     0.0328390     0.0421967     0.0100000     0.0200000
+  fa225                  566398       0             0     0.9800000     0.0135704     0.0153864     0.0100000     0.0100000
+  fa226                  566398       0             0     5.2400000     0.0717357     0.0749664     0.0300000     0.0500000
+  fa182                  566398       0     0.0300000   503.1500000    12.8478326     8.2449182     7.7000000    11.1600000
+  HEI2015_TOTAL_SCORE    566398       0    21.5497043    97.5237750    67.5207067     9.6239648    61.2850866    68.4296518
+  MPED_D_CHEESE          566398       0             0    13.9200000     0.2262262     0.2525728     0.0800000     0.1600000
+  MPED_D_MILK            566398       0             0    39.7300000     1.1139616     1.2882939     0.3300000     0.7400000
+  MPED_D_TOTAL           566398       0             0    52.5000000     1.4163642     1.3664560     0.5800000     1.0500000
+  MPED_D_YOGURT          566398       0             0     2.2600000     0.0675034     0.1668825             0             0
+  MPED_G_WHL             566398       0             0    12.7700000     1.0100030     0.8561963     0.4300000     0.8100000
+  MPED_PROCMEAT          566398       0             0    54.0000000     0.7271013     0.8707358     0.2200000     0.4700000
+  MPED_REDMEAT           566398       0             0   163.3400000     2.0975559     2.1419349     0.8500000     1.6000000
+  MPED_VEG_CHENO         566398       0             0     3.4000000     0.0600579     0.1519820             0     0.0100000
+  MPED_VEG_CORN          566398       0             0     2.6400000     0.0688676     0.0873193     0.0200000     0.0400000
+  MPED_VEG_CRUC2         566398       0             0    10.6800000     0.2629438     0.3380581     0.0700000     0.1700000
+  MPED_VEG_GREEN_LEAFY   566398       0             0    11.1800000     0.4727490     0.4915657     0.1500000     0.3200000
+  MPED_VEG_LEGUM         566398       0             0     8.0200000     0.2458740     0.2697758     0.0800000     0.1800000
+  MPED_VEG_LETTUCE       566398       0             0     2.0400000     0.2406379     0.2794950     0.0700000     0.1600000
+  MPED_VEG_SOLAN         566398       0             0    19.9800000     0.3251310     0.3878326     0.1200000     0.2300000
+  MPED_VEG_SWEET_POTATO  566398       0             0     2.3400000     0.0334591     0.0707536     0.0100000     0.0200000
+  MPED_VEG_UMBEL         566398       0             0     2.1800000     0.0955439     0.1800728     0.0100000     0.0200000
+  MPED_V_DRKGR           566398       0             0     9.3400000     0.2437798     0.3402687     0.0600000     0.1500000
+  MPED_V_ORANGE          566398       0             0     7.7800000     0.1697751     0.2212310     0.0500000     0.1000000
+  MPED_V_OTHER           566398       0             0    22.2400000     0.6434921     0.5379064     0.3000000     0.5100000
+  MPED_V_TOMATO          566398       0             0    22.2500000     0.3806311     0.4013772     0.1700000     0.2900000
+  MPED_V_TOTAL           566398       0             0    78.3600000     1.9958637     1.4116702     1.1400000     1.7100000
+  MPED_WHITEMEAT         566398       0             0    81.1000000     1.1679434     1.2679132     0.4200000     0.8300000
+  PHYSIC                 566398       0             0     9.0000000     3.1629596     1.5897083     2.0000000     3.0000000
+  PUFA_N3                566398       0             0    57.1000000     1.4663961     0.8951782     0.9100000     1.2900000
+  PUFA_N6                566398       0     0.0300000   510.4100000    12.9502603     8.3026266     7.7700000    11.2500000
+  -------------------------------------------------------------------------------------------------------------------------
+
+                                                       The SAS System                      16:57 Wednesday, July 15, 2020   3
+
+                                                     The MEANS Procedure
+
+                                                                           Upper
+                                             Variable                   Quartile
+                                             -----------------------------------
+                                             fa183                     1.6600000
+                                             fa205                     0.0400000
+                                             fa225                     0.0200000
+                                             fa226                     0.0900000
+                                             fa182                    15.9200000
+                                             HEI2015_TOTAL_SCORE      74.5663037
+                                             MPED_D_CHEESE             0.2900000
+                                             MPED_D_MILK               1.4200000
+                                             MPED_D_TOTAL              1.7900000
+                                             MPED_D_YOGURT             0.0500000
+                                             MPED_G_WHL                1.3300000
+                                             MPED_PROCMEAT             0.9500000
+                                             MPED_REDMEAT              2.7400000
+                                             MPED_VEG_CHENO            0.0500000
+                                             MPED_VEG_CORN             0.1000000
+                                             MPED_VEG_CRUC2            0.3300000
+                                             MPED_VEG_GREEN_LEAFY      0.6300000
+                                             MPED_VEG_LEGUM            0.3200000
+                                             MPED_VEG_LETTUCE          0.3300000
+                                             MPED_VEG_SOLAN            0.4000000
+                                             MPED_VEG_SWEET_POTATO     0.0400000
+                                             MPED_VEG_UMBEL            0.0800000
+                                             MPED_V_DRKGR              0.3000000
+                                             MPED_V_ORANGE             0.2100000
+                                             MPED_V_OTHER              0.8400000
+                                             MPED_V_TOMATO             0.4600000
+                                             MPED_V_TOTAL              2.4900000
+                                             MPED_WHITEMEAT            1.5200000
+                                             PHYSIC                    4.0000000
+                                             PUFA_N3                   1.8100000
+                                             PUFA_N6                  16.0400000
+                                             -----------------------------------
+                                                       The SAS System                      16:57 Wednesday, July 15, 2020   4
+
+                                                                             HEI2015_
+                                                                               TOTAL_   MPED_D_   MPED_D_   MPED_D_
+ Obs _TYPE_ _FREQ_ _STAT_     fa183     fa205     fa225     fa226     fa182     SCORE    CHEESE      MILK     TOTAL
+
+  1     0   566398  N     566398.00 566398.00 566398.00 566398.00 566398.00 566398.00 566398.00 566398.00 566398.00
+  2     0   566398  MIN        0.00      0.00      0.00      0.00      0.03     21.55      0.00      0.00      0.00
+  3     0   566398  MAX       48.37      2.13      0.98      5.24    503.15     97.52     13.92     39.73     52.50
+  4     0   566398  MEAN       1.35      0.03      0.01      0.07     12.85     67.52      0.23      1.11      1.42
+  5     0   566398  STD        0.83      0.04      0.02      0.07      8.24      9.62      0.25      1.29      1.37
+
+                                                                                  MPED_VEG_
+       MPED_D_      MPED_      MPED_      MPED_  MPED_VEG_  MPED_VEG_  MPED_VEG_    GREEN_   MPED_VEG_  MPED_VEG_  MPED_VEG_
+ Obs    YOGURT      G_WHL   PROCMEAT    REDMEAT    CHENO       CORN      CRUC2      LEAFY      LEGUM     LETTUCE     SOLAN
+
+  1  566398.00  566398.00  566398.00  566398.00  566398.00  566398.00  566398.00  566398.00  566398.00  566398.00  566398.00
+  2       0.00       0.00       0.00       0.00       0.00       0.00       0.00       0.00       0.00       0.00       0.00
+  3       2.26      12.77      54.00     163.34       3.40       2.64      10.68      11.18       8.02       2.04      19.98
+  4       0.07       1.01       0.73       2.10       0.06       0.07       0.26       0.47       0.25       0.24       0.33
+  5       0.17       0.86       0.87       2.14       0.15       0.09       0.34       0.49       0.27       0.28       0.39
+
+     MPED_VEG_
+       SWEET_   MPED_VEG_    MPED_V_    MPED_V_    MPED_V_    MPED_V_    MPED_V_    MPED_
+ Obs   POTATO     UMBEL        DRKGR     ORANGE      OTHER     TOMATO      TOTAL  WHITEMEAT     PHYSIC    PUFA_N3    PUFA_N6
+
+  1  566398.00  566398.00  566398.00  566398.00  566398.00  566398.00  566398.00  566398.00  566398.00  566398.00  566398.00
+  2       0.00       0.00       0.00       0.00       0.00       0.00       0.00       0.00       0.00       0.00       0.03
+  3       2.34       2.18       9.34       7.78      22.24      22.25      78.36      81.10       9.00      57.10     510.41
+  4       0.03       0.10       0.24       0.17       0.64       0.38       2.00       1.17       3.16       1.47      12.95
+  5       0.07       0.18       0.34       0.22       0.54       0.40       1.41       1.27       1.59       0.90       8.30

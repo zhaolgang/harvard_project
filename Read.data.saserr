@@ -1,0 +1,3 @@
+
+388:NOTE: Variable _end_ is uninitialized.
+541:WARNING: The variable _end_ exists on an input data set and is also set by an I/O statement option.  The variable will not 
